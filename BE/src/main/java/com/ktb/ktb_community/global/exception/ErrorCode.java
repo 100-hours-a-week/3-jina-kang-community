@@ -10,15 +10,19 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다"),
     // auth
     UNAUTHRIZED_USER(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호를 잘못 입력했습니다"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다"),
     // user
 
     // post
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다");
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다"),
     // comment
 
     // like
 
     // file
+
+    ;
 
     private final HttpStatus status;
     private final String message;
