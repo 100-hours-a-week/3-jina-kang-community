@@ -14,6 +14,8 @@ import com.ktb.ktb_community.post.repository.PostRepository;
 import com.ktb.ktb_community.post.repository.PostStatusRepository;
 import com.ktb.ktb_community.user.entity.User;
 import com.ktb.ktb_community.user.repository.UserRepository;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +36,7 @@ public class PostService {
     private final PostStatusRepository postStatusRepository;
     private final PostMapper postMapper;
 
+    // post 목록 조회
     @Transactional(readOnly = true)
     public CursorResponse<PostListResponse> getPostList(Long cursor, String deviceType) {
         if(cursor != null && cursor <= 0) cursor = null;
@@ -52,9 +55,10 @@ public class PostService {
         Long nextCursor = hasNext ? posts.get(posts.size()-1).postId() : null;
 
         log.info("getPostList - posts: {}", posts.size());
-        return new CursorResponse<>(posts, nextCursor, hasNext);
+        return new CursorResponse<PostListResponse>(posts, nextCursor, hasNext, null);
     }
 
+    // post 상세 조회
     @Transactional
     public PostDetailResponse getPostDetail(Long postId, Long userId) {
         log.info("getPostDetail - {}", postId);
@@ -72,6 +76,7 @@ public class PostService {
         return response;
     }
 
+    // post 생성
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
         log.info("createPost - {}", request);
@@ -83,6 +88,7 @@ public class PostService {
         Post post = postMapper.toEntity(request,  user);
         // 게시물 저장
         Post savedPost = postRepository.save(post);
+        // TODO 사진 저장
 
         // 저장된 게시물 반환
         // Entity -> DTO
@@ -104,12 +110,15 @@ public class PostService {
         }
         // 게시글 업데이트
         post.updatePost(request.title(), request.content());
+        // TODO 업데이트된 파일 리스트와 기존 파일 비교 - 변경된 파일 수정
+
         // 업데이트한 게시글 상세조회 데이터 조회
         PostDetailResponse response = postMapper.toPostDetailResponse(post, userId);
 
         return response;
     }
 
+    // post 삭제
     @Transactional
     public void deletePost(Long postId, Long userId) {
         log.info("deletePost - {}", postId);
